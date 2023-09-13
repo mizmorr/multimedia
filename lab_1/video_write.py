@@ -4,19 +4,19 @@ import numpy as np
 cap = cv2.VideoCapture(0)
 
 if (cap.isOpened() == False):
-  print('bad')
+  print("bad")
 
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 
-out = cv2.VideoWriter('out.avi',cv2.VideoWriter_fourcc(*'XVID'), 10, (frame_width,frame_height))
+out = cv2.VideoWriter('out.avi',cv2.VideoWriter_fourcc(*'MJPG'), 10, (frame_width,frame_height))
 
 while(True):
   ret, frame = cap.read()
 
   if ret == True:
 
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2GRAY)
 
     out.write(frame)
 
@@ -32,3 +32,4 @@ cap.release()
 out.release()
 
 cv2.destroyAllWindows()
+
