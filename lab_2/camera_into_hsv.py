@@ -9,7 +9,7 @@ while True:
  ret, frame = cap.read()
  hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
  cv.imshow('rgb', frame)
- cv.moveWindow("hsv",700,55)
+ cv.moveWindow("hsv",700,85)
  cv.imshow('hsv',hsv)
  if cv.waitKey(1) == ord('q'):
     break
