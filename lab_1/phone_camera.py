@@ -2,7 +2,7 @@ import requests
 import cv2
 import numpy as np
 
-url = "http://192.168.0.140:8080/shot.jpg"
+url = "http://10.121.14.68:8080/shot.jpg"
 
 
 while True:

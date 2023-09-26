@@ -12,8 +12,8 @@ while True:
  if frame is None:
     break
  frame_HSV = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
- lower1 = np.array([0, 100, 20])
- upper1 = np.array([10, 255, 255])
+ lower1 = np.array([145, 100, 20])
+ upper1 = np.array([155, 205, 255])
 
  lower2 = np.array([160,100,20])
  upper2 = np.array([179,255,255])
