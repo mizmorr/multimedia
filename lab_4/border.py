@@ -102,14 +102,14 @@ for i in range(img.shape[0]):
 
 low_level = np.max(matr_grd_length)//25
 upper_level = np.max(matr_grd_length)- np.max(matr_grd_length)//25
-post_bordered = np.ones(img.shape)
+post_bordered = np.zeros(img.shape)
 
 for i in range(img.shape[0]):
     for j in range(img.shape[1]):
         grad = matr_grd_length[i][j]
         if border[i][j] == 255:
             if grad > upper_level:
-                post_bordered[i,j]=0
+                post_bordered[i,j]=255
             elif grad >= low_level and grad  <= upper_level:
                 is_border = False
                 for k in range(-1,2):
@@ -120,7 +120,7 @@ for i in range(img.shape[0]):
                             is_border = True
                             break
                     if is_border:
-                        post_bordered[i,j] = 0
+                        post_bordered[i,j] = 255
 
 cv2.imshow('border', border)
 cv2.imshow('bordered', post_bordered)
