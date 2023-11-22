@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-video = cv.VideoCapture("/home/temporary/Videos/main_video.mov",cv.CAP_ANY)
+video = cv2.VideoCapture("/home/temporary/Videos/main_video.mov",cv2.CAP_ANY)
 
 def detect(kernel_size, standard_deviation, delta_tresh, min_area):
 
