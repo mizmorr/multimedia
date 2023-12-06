@@ -4,10 +4,6 @@ from common import *
 from scipy.signal import convolve2d
 import matplotlib.pyplot as plt
 
-def plot_input(img, title):
-    plt.imshow(img, cmap = 'gray')
-    plt.title(title), plt.xticks([]), plt.yticks([])
-    plt.show()
 
 def handle_padding(img1, img2):
     M1, N1 = img1.shape[:2]
@@ -18,9 +14,10 @@ def handle_padding(img1, img2):
     img2 = img2[padding_x:M1+padding_x, padding_y: N1+padding_y]
     return img2
 
-im = cv2.imread('/home/temporary/Pictures/kittens/kitten1.jpeg')
+im = cv2.imread('/home/temporary/Pictures/kittens/kitten5.webp')
 im = cv2.resize(im,(600,480))
 im = cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
+cv2.imshow('original',im)
 
 sobelx = cv2.Sobel(im,cv2.CV_64F,1,0,ksize=3)
 sobely = cv2.Sobel(im,cv2.CV_64F,0,1,ksize=3)
@@ -44,7 +41,6 @@ LoG_kernel = np.array([
                     ])
 def zero_cross_detection(image):
     z_c_image = np.zeros(image.shape)
-
     for i in range(0,image.shape[0]-1):
         for j in range(0,image.shape[1]-1):
             if image[i][j]>0:
@@ -105,8 +101,8 @@ def log(im,thresh):
 result = dog(im,175)
 log = log(im,175)
 # print(np.where(result!=0))
-cv2.imshow('result',result)
-cv2.imshow('log',log)
+cv2.imshow('dog',result)
+# cv2.imshow('log',log)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()

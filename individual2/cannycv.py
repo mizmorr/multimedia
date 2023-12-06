@@ -1,4 +1,3 @@
-
 import numpy as np
 import os
 import cv2
@@ -14,7 +13,6 @@ def Canny_detector(img, weak_th = None, strong_th = None):
     # Calculating the gradients
     gx = cv2.Sobel(np.float32(img), cv2.CV_64F, 1, 0, 3)
     gy = cv2.Sobel(np.float32(img), cv2.CV_64F, 0, 1, 3)
-
 
     # Conversion of Cartesian coordinates to polar
     mag, ang = cv2.cartToPolar(gx, gy, angleInDegrees = True)

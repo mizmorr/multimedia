@@ -4,6 +4,7 @@ import math
 import numpy as np
 from scipy import ndimage
 from common import *
+from cannycv import *
 LOW_THRESHOLD_RATIO = 0.09
 HIGH_THRESHOLD_RATIO = 0.17
 WEAK_PIXEL = 100
@@ -12,20 +13,6 @@ STRONG_PIXEL = 255
 SAMPLE_IMAGE = "/home/temporary/Pictures/kittens/kitten1.jpeg"
 
 
-
-def sobel(im):
-    Gx = np.array([[1.0, 0.0, -1.0], [2.0, 0.0, -2.0], [1.0, 0.0, -1.0]])
-    Gy = np.array([[1.0, 2.0, 1.0], [0.0, 0.0, 0.0], [-1.0, -2.0, -1.0]])
-    out2 = cv2.filter2D(im, cv2.CV_64F, Gx, None, (-1,-1), 0, cv2.BORDER_DEFAULT)
-    out3 = cv2.filter2D(im, cv2.CV_64F, Gy, None, (-1,-1), 0, cv2.BORDER_DEFAULT)
-    out_result = np.hypot(out2, out3)
-    out_result = cv2.convertScaleAbs(out_result.copy())
-    matr_grd_dir = np.zeros(im.shape)
-    for i in range(im.shape[0]):
-        for j in range(im.shape[1]):
-            matr_grd_dir[i,j] = get_angle(out2[i,j],out3[i,j])
-
-    return out_result,matr_grd_dir
 
 def non_max(img,D):
     M, N = img.shape
@@ -127,25 +114,35 @@ def hysteresis(img):
                     pass
     return res
 
+def canny(img,num):
+    blurred = cv2.GaussianBlur(img,(5,5),2)
+    gradient, direct = (),(),()
+    if num==0:
+        gradient, direct = scharr_operator(blurred)
+    else:
+        gradient, direct = prewitt_operator(blurred)
+
+    non_max = non_max_sup(gradient,direct)
+    threshed = threshold(non_max)
+    return hysteresis(threshed)
+
+
 image = cv2.imread(SAMPLE_IMAGE,cv2.IMREAD_ANYCOLOR)
 image = cv2.resize(image,(600,480))
+# cv2.imshow('original',image)
+
+canny_cv = Canny_detector(image,WEAK_PIXEL,STRONG_PIXEL)
+
 gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 blurred = cv2.GaussianBlur(gray_image,(5,5),2)
 
 gradientMat, thetaMat,dirrect = sobel_filters(blurred)
 
 
-gradient, theta,direct = scharr_operator(blurred)
-
-
-grad, theta = sobel(blurred)
-
 non_m = non_max(gradientMat, thetaMat)
 non_max2 = non_max_sup(gradientMat,dirrect)
 
-non3 = non_max(grad,theta)
 
-non_max_sh = non_max_sup(gradient,direct)
 # non_max_img = non_max_sup(blurred,gradientMat,thetaMat)
 
 threshed = threshold(non_m)
@@ -153,26 +150,21 @@ threshed = threshold(non_m)
 threshed2 = threshold(non_max2)
 
 
-thresh4 = threshold(non3)
-
-thresh_sh = threshold(non_max_sh)
-# cv2.imshow('rgb', image)
-
 
 canny1 = hysteresis(threshed)
 canny2 = hysteresis(threshed2)
-canny4 = hysteresis(thresh4)
-cannysh = hysteresis(thresh_sh)
-cv2.imshow('grad+thet',canny1)
-cv2.imshow('grad+dir',canny2)
-cv2.imshow('conv2d',canny4)
-cv2.imshow('sharr',cannysh)
-# cv2.imshow('blured',blurred)
+# cv2.imshow('grad+thet',canny1)
+cv2.imshow('threshed',canny1)
+
+# cv2.imshow('grad+dir',canny2)
+# # cv2.imshow('conv2d',canny4)
+# cv2.imshow('scharr',canny(gray_image,0))
+# cv2.imshow('prewitt',canny(gray_image,1))
+# cv2.imshow('cannycv',canny_cv)
 
 
-canny_image_cv2 = cv2.Canny(image, WEAK_PIXEL, STRONG_PIXEL)
-cv2.imshow('canny',canny_image_cv2)
-# cv2.imshow('canny_handmade',non_max_img)
+# canny_image_cv2 = cv2.Canny(image, WEAK_PIXEL, STRONG_PIXEL)
+# cv2.imshow('canny',canny_image_cv2)
 
 cv2.waitKey(0)
 

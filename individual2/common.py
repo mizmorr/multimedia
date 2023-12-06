@@ -80,12 +80,11 @@ def filter2(img,Kx,Ky):
     G = np.array(G,dtype=np.float32)
     G = cv2.convertScaleAbs(G.copy())
     matr_grd_dir = np.zeros(img.shape)
-    theta = np.arctan2(Iy, Ix)
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
             matr_grd_dir[i,j] = get_angle(Ix[i,j],Iy[i,j])
 
-    return G, theta,matr_grd_dir
+    return G, matr_grd_dir
 
 def scharr_operator(img):
     SCx = np.array([
@@ -98,4 +97,14 @@ def scharr_operator(img):
         [-3, -10, -3]], dtype=np.float32)
     return filter2(img,SCx,SCy)
 
+def prewitt_operator(img):
+    PWx = np.array([
+        [-1, 0,1],
+        [-1, 0, 1],
+        [-1, 0, 1]], dtype=np.float32)
 
+    PWy = np.array([
+        [-1, -1,-1],
+        [0, 0, 0],
+        [1, 1, 1]], dtype=np.float32)
+    return filter2(img,PWx,PWy)
