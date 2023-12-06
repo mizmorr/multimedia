@@ -3,6 +3,7 @@ import cv2
 import math
 import numpy as np
 from scipy import ndimage
+from common import *
 LOW_THRESHOLD_RATIO = 0.09
 HIGH_THRESHOLD_RATIO = 0.17
 WEAK_PIXEL = 100
@@ -10,77 +11,7 @@ STRONG_PIXEL = 255
 
 SAMPLE_IMAGE = "/home/temporary/Pictures/kittens/kitten1.jpeg"
 
-def get_angle(x,y):
-    tg = y/x if x!=0 else 999
-    if y>0:
-        if x>0:
-            if tg<0.414:
-                return 2
-            if tg>2.414:
-                return 4
-            else:
-                return 3
-        else:
-            if tg<-2.414:
-                return 4
-            if tg<-0.414:
-                return 5
-            elif tg>-0.414:
-                return 6
-    else:
-        if x>0:
-            if tg<-2.414:
-                return 0
-            if tg<-0.414:
-                return 1
-            if tg>-0.414:
-                return 2
-        else:
-            if tg>2.414:
-                return 0
-            if tg<2.414:
-                return 7
-            if tg < 0.414:
-                return 6
 
-def convolve(img, kernel):
-    size = len(kernel)
-    s = size // 2
-    matr = img.copy()
-    for i in range(s, len(matr)-s):
-        for j in range(s, len(matr[i])-s):
-            val = 0
-            for k in range(-s, s+1):
-                for l in range(-s, s+1):
-                    val += img[i + k][j + l] * kernel[k+s][l + s]
-            matr[i][j] = val
-
-    return matr
-
-
-
-def sobel_filters(img):
-    Kx = np.array([
-        [-1, 0, 1],
-        [-2, 0, 2],
-        [-1, 0, 1]], dtype=np.float32)
-    Ky = np.array([
-        [1, 2, 1],
-        [0, 0, 0],
-        [-1, -2, -1]], dtype=np.float32)
-
-    Ix = convolve(img, Kx)
-    Iy = convolve(img, Ky)
-    G = np.hypot(Ix, Iy)
-    G = np.array(G,dtype=np.float32)
-
-    matr_grd_dir = np.zeros(img.shape)
-    theta = np.arctan2(Iy, Ix)
-    for i in range(img.shape[0]):
-        for j in range(img.shape[1]):
-            matr_grd_dir[i,j] = get_angle(Ix[i,j],Iy[i,j])
-
-    return G, theta,matr_grd_dir
 
 def sobel(im):
     Gx = np.array([[1.0, 0.0, -1.0], [2.0, 0.0, -2.0], [1.0, 0.0, -1.0]])
@@ -203,35 +134,39 @@ blurred = cv2.GaussianBlur(gray_image,(5,5),2)
 
 gradientMat, thetaMat,dirrect = sobel_filters(blurred)
 
+
+gradient, theta,direct = scharr_operator(blurred)
+
+
 grad, theta = sobel(blurred)
 
 non_m = non_max(gradientMat, thetaMat)
 non_max2 = non_max_sup(gradientMat,dirrect)
-non_m2 = non_max(gradientMat, dirrect)
 
 non3 = non_max(grad,theta)
+
+non_max_sh = non_max_sup(gradient,direct)
 # non_max_img = non_max_sup(blurred,gradientMat,thetaMat)
 
 threshed = threshold(non_m)
 
 threshed2 = threshold(non_max2)
 
-threshed3 = threshold(non_m2)
 
 thresh4 = threshold(non3)
 
+thresh_sh = threshold(non_max_sh)
 # cv2.imshow('rgb', image)
 
 
 canny1 = hysteresis(threshed)
 canny2 = hysteresis(threshed2)
-canny3 = hysteresis(threshed3)
 canny4 = hysteresis(thresh4)
-cv2.imshow('dsd',canny1)
-# cv2.imshow('dsd2',canny2)
-cv2.imshow('dsd4',canny3)
-cv2.imshow('dsd5',canny4)
-
+cannysh = hysteresis(thresh_sh)
+cv2.imshow('grad+thet',canny1)
+cv2.imshow('grad+dir',canny2)
+cv2.imshow('conv2d',canny4)
+cv2.imshow('sharr',cannysh)
 # cv2.imshow('blured',blurred)
 
 

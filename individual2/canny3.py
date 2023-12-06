@@ -184,7 +184,7 @@ def convolve(img, kernel):
 
 import cv2
 import numpy as np
-im = cv2.imread('/home/temporary/Pictures/kittens/kitten1.jpeg'); #// Save image to computer first
+im = cv2.imread('/home/temporary/Pictures/kittens/kitten1.jpeg');
 im = cv2.resize(im,(600,480))
 gray_image = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 im = cv2.GaussianBlur(gray_image,(5,5),2)

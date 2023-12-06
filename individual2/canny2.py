@@ -67,8 +67,7 @@ def Canny_detector(img, weak_th = None, strong_th = None):
                 if mag[i_y, i_x]<mag[neighb_2_y, neighb_2_x]:
                     mag[i_y, i_x]= 0
 
-    weak_ids = np.zeros_like(img)
-    strong_ids = np.zeros_like(img)
+
     ids = np.zeros_like(img)
 
     # double thresholding step
@@ -85,25 +84,3 @@ def Canny_detector(img, weak_th = None, strong_th = None):
                 ids[i_y, i_x]= 2
     return mag
 
-
-SAMPLE_IMAGE = "/home/temporary/Pictures/kittens/kitten1.jpeg"
-
-
-
-image = cv2.imread(SAMPLE_IMAGE,cv2.IMREAD_ANYCOLOR)
-image = cv2.resize(image,(600,480))
-# calling the designed function for
-# finding edges
-canny_img = Canny_detector(image,100,255)
-cv2.imshow('canny',canny_img)
-# cv2.imshow('canny_handmade',non_max_img)
-
-cv2.waitKey(0)
-
-cv2.destroyAllWindows()
-
-# Displaying the input and output image
-# plt.figure()
-# f, plots = plt.subplots(2, 1)
-# plots[0].imshow(frame)
-# plots[1].imshow(canny_img)
