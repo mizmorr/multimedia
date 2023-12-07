@@ -1,4 +1,5 @@
 import os
+import time
 import cv2
 import math
 import numpy as np
@@ -9,8 +10,6 @@ LOW_THRESHOLD_RATIO = 0.09
 HIGH_THRESHOLD_RATIO = 0.17
 WEAK_PIXEL = 100
 STRONG_PIXEL = 255
-
-SAMPLE_IMAGE = "/home/temporary/Pictures/kittens/kitten1.jpeg"
 
 
 
@@ -147,9 +146,7 @@ def sobel(img,num,kernel_size,delta):
         return result
 
 
-image = cv2.imread(SAMPLE_IMAGE,cv2.IMREAD_ANYCOLOR)
-image = cv2.resize(image,(600,480))
-# cv2.imshow('original',image)
+
 
 # canny_cv = Canny_detector(image,WEAK_PIXEL,STRONG_PIXEL)
 
@@ -171,16 +168,14 @@ image = cv2.resize(image,(600,480))
 
 # canny1 = hysteresis(threshed)
 # canny2 = hysteresis(threshed2)
+
 # cv2.imshow('grad+thet',sobel(image,1,5,1.4))
 # cv2.imshow('grad+dir',sobel(image,2,5,2))
-cv2.imshow('scharr',not_sobel(image,1))
+# cv2.imshow('scharr',not_sobel(image,0))
+
 # cv2.imshow('prewitt',canny(gray_image,1))
-cv2.imshow('cannycv',sobel(image,0,5,1))
+# cv2.imshow('cannycv',sobel(image,0,5,1))
 
 
 # canny_image_cv2 = cv2.Canny(image, WEAK_PIXEL, STRONG_PIXEL)
 # cv2.imshow('canny',canny_image_cv2)
-
-cv2.waitKey(0)
-
-cv2.destroyAllWindows()

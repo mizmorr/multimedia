@@ -14,14 +14,6 @@ def handle_padding(img1, img2):
     img2 = img2[padding_x:M1+padding_x, padding_y: N1+padding_y]
     return img2
 
-im = cv2.imread('/home/temporary/Pictures/kittens/kitten5.webp')
-im = cv2.resize(im,(600,480))
-im = cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
-cv2.imshow('original',im)
-
-sobelx = cv2.Sobel(im,cv2.CV_64F,1,0,ksize=3)
-sobely = cv2.Sobel(im,cv2.CV_64F,0,1,ksize=3)
-sobel_first_derivative = cv2.magnitude(sobelx,sobely)
 
 DoG_kernel = [
             [0,   0, -1, -1, -1, 0, 0],
@@ -60,50 +52,27 @@ def bitwise_and(img1, img2):
                 result[i][j]=255
     return result
 
-def dog(im,thresh):
-    dog_img = convolve2d(im,DoG_kernel)
-    # dog_img = cv2.filter2D(src=im, ddepth=-1, kernel=np.float32(DoG_kernel))
-    zero = zero_cross_detection(dog_img)
+
+def gaussian(im,num,thresh,k_size):
+    im = cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
+    sobelx = cv2.Sobel(im,cv2.CV_64F,1,0,ksize=k_size)
+    sobely = cv2.Sobel(im,cv2.CV_64F,0,1,ksize=k_size)
+    sobel_first_derivative = cv2.magnitude(sobelx,sobely)
+    img = ()
+    if num ==0:
+        img = convolve2d(im,DoG_kernel)
+    else:
+        img = convolve2d(im,LoG_kernel)
+    zero = zero_cross_detection(img)
     zero = handle_padding(im, zero)
     cv2.imshow('zero',zero)
 
     sobel_test = np.empty_like(sobel_first_derivative)
-
     sobel_test[:] = sobel_first_derivative
-
     sobel_test[sobel_test > thresh] = 255
     sobel_test[sobel_test < thresh] = 0
-    # sobel_test = sobel_test[:,:,0]
     cv2.imshow('boosted',sobel_test)
     # ar = cv2.bitwise_and(np.uint8(zero),np.uint8(sobel_test))
     result = bitwise_and(zero, sobel_test)
     return result
-
-def log(im,thresh):
-    log_img = convolve2d(im,LoG_kernel)
-    # dog_img = cv2.filter2D(src=im, ddepth=-1, kernel=np.float32(DoG_kernel))
-    zero = zero_cross_detection(log_img)
-    zero = handle_padding(im, zero)
-    cv2.imshow('zero',zero)
-
-    sobel_test = np.empty_like(sobel_first_derivative)
-
-    sobel_test[:] = sobel_first_derivative
-
-    sobel_test[sobel_test > thresh] = 255
-    sobel_test[sobel_test < thresh] = 0
-    # sobel_test = sobel_test[:,:,0]
-    cv2.imshow('boosted',sobel_test)
-    # ar = cv2.bitwise_and(np.uint8(zero),np.uint8(sobel_test))
-    result = bitwise_and(zero, sobel_test)
-    return result
-
-result = dog(im,175)
-log = log(im,175)
-# print(np.where(result!=0))
-cv2.imshow('dog',result)
-# cv2.imshow('log',log)
-
-cv2.waitKey(0)
-cv2.destroyAllWindows()
 
