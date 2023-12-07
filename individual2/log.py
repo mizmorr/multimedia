@@ -72,6 +72,7 @@ def gaussian(im,num,thresh,k_size):
     sobel_test[sobel_test > thresh] = 255
     sobel_test[sobel_test < thresh] = 0
     cv2.imshow('boosted',sobel_test)
+    cv2.moveWindow('boosted',500,0)
     # ar = cv2.bitwise_and(np.uint8(zero),np.uint8(sobel_test))
     result = bitwise_and(zero, sobel_test)
     return result

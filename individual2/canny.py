@@ -8,8 +8,8 @@ from common import *
 from cannycv import *
 LOW_THRESHOLD_RATIO = 0.09
 HIGH_THRESHOLD_RATIO = 0.17
-WEAK_PIXEL = 100
-STRONG_PIXEL = 255
+WEAK_PIXEL = 80
+STRONG_PIXEL = 160
 
 
 
@@ -113,9 +113,9 @@ def hysteresis(img):
                     pass
     return res
 
-def not_sobel(img,num):
+def not_sobel(img,num,k_size,delta):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(img,(5,5),1.4)
+    blurred = cv2.GaussianBlur(img,(k_size,k_size),delta)
 
     gradient, theta, direct = (),(),()
     if num==0:

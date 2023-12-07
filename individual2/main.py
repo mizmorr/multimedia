@@ -2,10 +2,16 @@ from canny import *
 from log import *
 import cv2
 
-SAMPLE_IMAGE = "/home/temporary/Pictures/kittens/kitten1.jpeg"
+SAMPLE_IMAGE = "/home/temporary/Pictures/kittens/kitten2.jpg"
 image = cv2.imread(SAMPLE_IMAGE,cv2.IMREAD_UNCHANGED)
 image = cv2.resize(image,(525,350))
+
+kernel_size = 5
+delta = 4
+
+image = cv2.GaussianBlur(image,(kernel_size, kernel_size),delta)
 cv2.imshow('original',image)
+
 
 while cv2.waitKey(0)!=ord('e'):
 
@@ -17,24 +23,24 @@ while cv2.waitKey(0)!=ord('e'):
         print('sobel start')
         cv2.destroyAllWindows()
         start = time.time()
-        handm = sobel(image,0,5,1.4)
+        handm = sobel(image,0,kernel_size,delta)
         end = time.time()
-        print('first sobel done, time - ', end-start,'ms')
+        print('first sobel done, time - ', end-start,'s')
 
         start = time.time()
-        thet = sobel(image,1,5,1.4)
+        thet = sobel(image,1,kernel_size,delta)
         end = time.time()
-        print('second sobel done, time - ', end-start,'ms')
+        print('second sobel done, time - ', end-start,'s')
 
         start = time.time()
-        direct = sobel(image,2,5,1.4)
+        direct = sobel(image,2,kernel_size,delta)
         end = time.time()
-        print('third sobel done, time - ', end-start,'ms')
+        print('third sobel done, time - ', end-start,'s')
 
         start = time.time()
-        canny_opencv = sobel(image,3,5,1.4)
+        canny_opencv = sobel(image,3,kernel_size,delta)
         end = time.time()
-        print('fourth sobel done, time - ', end-start,'ms')
+        print('fourth sobel done, time - ', end-start,'s')
         print('lets display')
         cv2.imshow('first',handm)
         cv2.imshow('second',thet)
@@ -48,13 +54,13 @@ while cv2.waitKey(0)!=ord('e'):
         print('not sobel start')
         cv2.destroyAllWindows()
         start = time.time()
-        prewitt = not_sobel(image,1)
+        prewitt = not_sobel(image,1,kernel_size,delta)
         end = time.time()
-        print('prewitt done, time - ', end-start,'ms')
+        print('prewitt done, time - ', end-start,'s')
         start = time.time()
-        scharr = not_sobel(image,0)
+        scharr = not_sobel(image,0,kernel_size,delta)
         end = time.time()
-        print('scharr done, time - ', end-start,'ms')
+        print('scharr done, time - ', end-start,'s')
         cv2.imshow('prewitt',prewitt)
         cv2.imshow('scharr',scharr)
         cv2.moveWindow("scharr",600,0)
@@ -62,19 +68,22 @@ while cv2.waitKey(0)!=ord('e'):
     if cv2.waitKey(0) == ord('l'):
         cv2.destroyAllWindows()
         start = time.time()
-        log = gaussian(image,1,175,5)
+        log = gaussian(image,1,175,kernel_size)
         end = time.time()
-        print('Laplasian of Gaussian done, time - ', end-start,'ms')
-        cv2.imshow('Laplasian of Gaussian done',log)
+        print('Laplasian of Gaussian done, time - ', end-start,'s')
+        cv2.imshow('Laplasian of Gaussian',log)
+        cv2.moveWindow('Laplasian of Gaussian',1000,0)
 
     if cv2.waitKey() == ord('d'):
         cv2.destroyAllWindows()
         start = time.time()
-        dog = gaussian(image,0,175,5)
+        dog = gaussian(image,0,175,kernel_size)
         end = time.time()
-        print('Difference of Gaussian done, time - ', end-start,'ms')
+        print('Difference of Gaussian done, time - ', end-start,'s')
         cv2.imshow('Difference of Gaussian',dog)
+        cv2.moveWindow('Difference of Gaussian',1000,0)
 
 print('exit....')
+cv2.waitKey(0)
 cv2.destroyAllWindows()
 
