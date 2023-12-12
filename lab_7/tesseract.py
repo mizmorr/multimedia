@@ -4,11 +4,18 @@ import time
 import easyocr
 import os
 import json
+import cv2
+import numpy as np
+from augmentation import augment
 class Recognition:
 
-    def read_annotations(self, annotation_file):
+    def __init__(self,annotation_file='annotation.json',):
+        self.annotation_file = annotation_file
+        self.additional_annotation = 'additional.json'
+
+    def read_annotations(self):
         annotations= list()
-        f = open(annotation_file)
+        f = open(self.annotation_file)
         data = json.load(f)
         for row in data:
             annotations.append(list(map(list, row.items()))[0])
@@ -49,8 +56,8 @@ class Recognition:
 
         return full_match, error_percent
 
-    def start_recognition(self, rec_type, annotation_file, images_folder):
-        annotations = self.read_annotations(annotation_file)
+    def start_recognition(self, rec_type, images_folder):
+        annotations = self.read_annotations(self.annotation_file)
         results = []
         all_full=0
         general_error=0
@@ -93,6 +100,64 @@ class Recognition:
         with open('results_1/general_results.txt','a',encoding='utf-8') as general:
             general.write(res_string)
             general.close()
+
+    def task_3(self,img_name):
+            f = open (self.additional_annotation, "r")
+
+            data = json.loads(f.read())
+            expected_text = data[img_name]
+            background_color=(255, 255, 255)
+            parent_folder = img_name[0:img_name.find('.')]+"_results"
+
+            if os.path.isdir(parent_folder):
+                os.system(f'rm -rf {parent_folder}')
+
+            images_folder = parent_folder+"/img"
+            os.makedirs(parent_folder, exist_ok=True)
+            os.makedirs(images_folder, exist_ok=True)
+            general_error = 0
+            general_full = 0
+            results = []
+            img = cv2.imread("dataset_1/"+img_name,cv2.IMREAD_ANYCOLOR)
+            start_time = time.time()
+
+            for angle in range(-20, 21, 1):
+                rotated_img = augment(img, angle, background_color)
+                recognized_text, elapsed_time = self.straight_recognition(img)
+                full_match, error = self.accuracy(expected_text, recognized_text)
+
+                output_name =  img_name[0:img_name.find('.')]+f'({angle})'+img_name[img_name.find('.'):]
+                results.append({
+                        'Имя файла': output_name,
+                        'Ожидаемый текст': expected_text,
+                        'Распознанный текст': recognized_text,
+                        'Полное совпадение': full_match,
+                        'Ошибка': error,
+                        'Время распознавания': elapsed_time
+                })
+
+                general_full+=int(full_match)
+                general_error+=error
+                output_path = f'{images_folder}/{output_name}'
+                cv2.imwrite(output_path, rotated_img)
+
+            result_file_path = parent_folder+'/tests.json'
+            with open(result_file_path, 'w', encoding='utf-8') as result_file:
+                    json.dump(results, result_file, indent=4, ensure_ascii=False)
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            general_full/=41
+            mean_error = general_error/41
+            res_string = f"--------------------------\nПроцент полного совпадения:{general_full*100}%\nОбщая ошибка:{general_error}\nСреднее ошибки:{mean_error}%\nВремя распознования:{elapsed_time}\n--------------------------\n"
+            with open(parent_folder+'/general_results.txt','a',encoding='utf-8') as general:
+                general.write(res_string)
+                general.close()
+            cv2.imshow("original",img)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+
 recognizer = Recognition()
-recognizer.start_recognition(rec_type='straight_recognition', annotation_file='annotation.json', images_folder='dataset_1')
-recognizer.start_recognition(rec_type='easyocr_recognition', annotation_file='annotation.json', images_folder='dataset_1')
+# recognizer.start_recognition(rec_type='straight_recognition', annotation_file='annotation.json', images_folder='dataset_1')
+# recognizer.start_recognition(rec_type='easyocr_recognition', annotation_file='annotation.json', images_folder='dataset_1')
+recognizer.task_3('commit.png')
