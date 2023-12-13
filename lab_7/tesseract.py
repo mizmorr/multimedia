@@ -57,12 +57,14 @@ class Recognition:
 
         return full_match, error_percent
 
-    def start_recognition(self, rec_type, images_folder,task_number=0):
+    def start_recognition(self, rec_type, images_folder,task_number=1):
         annotations = self.read_annotations()
         results = []
         all_full=0
         general_error=0
-        os.makedirs("results_2", exist_ok=True)
+        path_name = "results_"+str(task_number)
+
+        os.makedirs(path_name, exist_ok=True)
         start_time = time.time()
 
         for annotation in annotations:
@@ -93,15 +95,15 @@ class Recognition:
             all_full+=int(full_match)
             general_error+=error
 
-        result_file_path = f'results_2/{rec_type}.json'
+        result_file_path = f'{path_name}/{rec_type}.json'
         with open(result_file_path, 'w', encoding='utf-8') as result_file:
             json.dump(results, result_file, indent=4, ensure_ascii=False)
         end_time = time.time()
         elapsed_time = end_time - start_time
         all_full/=len(annotations)
         mean_error = general_error/len(annotations)
-        res_string = f"Метод разпознавания:{rec_type}\nПроцент полного совпадения:{all_full*100}%\nОбщая ошибка:{general_error}\nСреднее ошибки:{mean_error}%\nВремя распознования:{elapsed_time}\n--------------\n"
-        with open('results_2/general_results.txt','a',encoding='utf-8') as general:
+        res_string = f"Метод распознавания:{rec_type}\nПроцент полного совпадения:{all_full*100}%\nОбщая ошибка:{general_error}\nСреднее ошибки:{mean_error}%\nВремя распознования:{elapsed_time}\n--------------\n"
+        with open(path_name+'/general_results.txt','a',encoding='utf-8') as general:
             general.write(res_string)
             general.close()
 
@@ -169,6 +171,61 @@ class Recognition:
             cv2.destroyAllWindows()
 
 
+    def task_8(self,dataset_folder):
+        f = open (self.additional_annotation, "r")
+        data = json.loads(f.read())
+        results = []
+        general_full = 0
+        general_error = 0
+        os.makedirs('results_8', exist_ok=True)
+        daughter_path = f'results_8/{dataset_folder}'
+        os.makedirs(daughter_path)
+
+        start_time = time.time()
+        for img_name in os.listdir(dataset_folder):
+            annotation_name = img_name
+            if re.search(r'\d', img_name):
+                head = ""
+                if  img_name.count('_')!=1:
+                    splitted = img_name.split('_')
+                    head = splitted[0]+'_'+splitted[1]
+                else:
+                    head = img_name[0:img_name.find('_')]
+                tail = img_name[img_name.find('.'):]
+                annotation_name = head+tail
+            expected_text = data[annotation_name]
+            image_path = os.path.join(dataset_folder, img_name)
+            recognized_text, elapsed_time = self.easyocr_recognition(image_path)
+
+            full_match, error = self.accuracy(expected_text, recognized_text)
+
+            results.append({
+                'Имя файла': img_name,
+                'Ожидаемый текст': expected_text,
+                'Распознанный текст': recognized_text,
+                'Полное совпадение': full_match,
+                'Ошибка': error,
+                'Время распознавания': elapsed_time
+            })
+            general_full+=int(full_match)
+            general_error+=error
+
+        result_file_path = f'{daughter_path}/partial_results.json'
+        with open(result_file_path, 'w', encoding='utf-8') as result_file:
+            json.dump(results, result_file, indent=4, ensure_ascii=False)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        general_full/=len(os.listdir(dataset_folder))
+        mean_error = general_error/len(os.listdir(dataset_folder))
+        res_string = f"--------------------------\nПроцент полного совпадения:{general_full*100}%\nОбщая ошибка:{general_error}\nСреднее ошибки:{mean_error}%\nВремя распознования:{elapsed_time}\n--------------------------\n"
+        with open(f'{daughter_path}/general_results.txt','a',encoding='utf-8') as general:
+            general.write(res_string)
+            general.close()
+
+
+
 recognizer = Recognition()
-recognizer.start_recognition(rec_type='straight_recognition', images_folder='dataset_1',task_number=4)
+
+# recognizer.start_recognition(rec_type='straight_recognition', images_folder='dataset_1',task_number=5.2)
 # recognizer.start_recognition(rec_type='easyocr_recognition', annotation_file='annotation.json', images_folder='dataset_1')
+# recognizer.task_8("dataset_2")

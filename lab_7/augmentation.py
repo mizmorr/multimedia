@@ -16,7 +16,7 @@ def augment_dataset(input_folder, output_folder, rotation_range=(-20, 21, 1), sc
 
         for angle in range(rotation_range[0], rotation_range[1], rotation_range[2]):
             rotated_img = augment(img, angle, background_color)
-            output_file = f"{os.path.splitext(image_file)[0]}_{angle}.png"
+            output_file = f"{os.path.splitext(image_file)[0]}_{angle}"+image_path[image_path.rfind('.'):]
             output_path = os.path.join(output_folder, output_file)
             cv2.imwrite(output_path, rotated_img)
 

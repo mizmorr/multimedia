@@ -1,5 +1,5 @@
 {
-    "google":"Google",
+    "google.png":"Google",
 
     "test.png":"Подскажите, а если на пк, нет доступа в интернет, как подключить к питону библиотеку tesseract ? Отдельно tesseract OCR я скачал с ноута и поставил на пк.",
 
@@ -19,5 +19,8 @@
 
     "word.png": "Как сравнить два документа Word",
 
-    "zudwa.jpg": "ZUDWA"
+    "zudwa.jpg": "ZUDWA",
+
+    "starfall.jpeg": "ГРАЖДАНСКАЯ ОБОРОНА ЗВЕЗДОПАД"
+
 }
