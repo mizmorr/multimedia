@@ -35,8 +35,16 @@ def unpack_single_gzip_in_folder(folder_path):
         print("Ошибка: Не удалось определить единственный файл .gz в указанной папке.")
 
 
-# folder = os.getcwd()+"/100_200_studies"
-folder = os.getcwd()
+folder = os.getcwd()+"/100_200_studies"
+# folder = os.getcwd()
+for x in os.listdir(folder):
+    current = os.path.join(folder,x)
+    if os.path.isdir(current):
+        nested_current = Path(os.path.join(current, os.listdir(current)[0]))
+        dicom2nifti.convert_directory(nested_current, "./imgs/")
+
+unpack_single_gzip_in_folder(os.path.join(os.getcwd(), "imgs"))
+
 # path  = Path("/home/temporary/work/multimedia/individual_3/100_200_studies/1.2.643.5.1.13.13.12.2.77.8252.15150908151113110911000201110706/1.2.643.5.1.13.13.12.2.77.8252.06110502031105001300030609150005")
 # dicom2nifti.convert_directory(path, ".")
 # nifti = nib.load("3.nii.gz")
@@ -45,7 +53,6 @@ folder = os.getcwd()
 
 # tested = head_mri[:,:, 23]
 # kernel = np.ones((5,5),np.uint8)
-unpack_single_gzip_in_folder(os.path.join(folder))
 # tested = cv2.cvtColor(tested,cv2.COLOR_BGR2GRAY)
 # print(tested.shape)
 # dst = cv2.detailEnhance(tested, sigma_s=10, sigma_r=0.15)
@@ -78,12 +85,6 @@ unpack_single_gzip_in_folder(os.path.join(folder))
 #         slice_counter+=1
 
 
-# for x in os.listdir(folder):
-#     current = os.path.join(folder,x)
-#     if os.path.isdir(current):
-#         nested_current = os.path.join(current, os.listdir(current)[0])
-#         # dicom2nifti.convert_directory(nested_current,os.path.join(folder,"result"))
-#         print(nested_current)
 
     # dicom2nifti.convert_directory(os.path.join(folder,x))
     # dicom2nifti.convert_directory(os.path.join("/home/temporary/work/multimedia/individual_3/100_200_studies", x,
